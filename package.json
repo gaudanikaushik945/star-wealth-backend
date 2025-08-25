@@ -2,11 +2,11 @@
   "name": "kr-welth-fe-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
-  },
+ "main": "api/index.js",
+"scripts": {
+  "start": "nodemon api/index.js"
+}
+,
   "keywords": [],
   "author": "",
   "license": "ISC",
