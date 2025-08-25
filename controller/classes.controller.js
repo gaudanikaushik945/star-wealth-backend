@@ -117,7 +117,7 @@ exports.getClasses = async (req, res) => {
     const skip = (pageNum - 1) * limitNum;
 
     // Count total
-    const total = await Classes.countDocuments(filter);
+    const total = await Classes.countDocuments({isDeleted: false});
 
     // Fetch data
     const classes = await Classes.find(filter)
