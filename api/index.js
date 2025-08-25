@@ -1,16 +1,16 @@
 const express = require('express');
 const app = express();
 require('dotenv').config();
-const connectDB = require('./Db/mongoose');
+const connectDB = require('../Db/mongoose');
 
 // Import routes
-const categoryRoutes = require('./routes/category.routes');
-const blogRoutes = require('./routes/blog.routes');
-const seoRoutes = require('./routes/seo.routes');
-const coursesRoutes = require('./routes/course.route');
-const adminRoutes = require('./routes/admin.route');
-const contactUsRoutes = require('./routes/contactus.route');
-const classesRoutes = require("./routes/classes.route");
+const categoryRoutes = require('../routes/category.routes');
+const blogRoutes = require('../routes/blog.routes');
+const seoRoutes = require('../routes/seo.routes');
+const coursesRoutes = require('../routes/course.route');
+const adminRoutes = require('../routes/admin.route');
+const contactUsRoutes = require('../routes/contactus.route');
+const classesRoutes = require("../routes/classes.route");
 
 const cors = require('cors');
 const path = require('path');
