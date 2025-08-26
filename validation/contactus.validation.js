@@ -4,7 +4,7 @@ const joi = require('joi');
 const contactUsSchema = joi.object({
   name: joi.string().min(3).max(50).required(),
     email: joi.string().email().required(),
-    phoneNumber: joi.string().pattern(/^\d+$/).required(), // Assuming phoneNumber is a string of digits
+    phoneNumber: joi.string().max(10).pattern(/^\d+$/).required(), // Assuming phoneNumber is a string of digits
     message: joi.string().min(10).max(500).required(),
     
 });
