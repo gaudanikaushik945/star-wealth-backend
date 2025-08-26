@@ -26,7 +26,10 @@ app.use(express.urlencoded({ extended: true }));
 connectDB();
 
 // Serve static files (uploads)
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+
 
 // API routes
 app.use('/api', categoryRoutes);
