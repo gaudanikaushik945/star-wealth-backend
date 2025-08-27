@@ -176,12 +176,14 @@ exports.updateClasses = async (req, res) => {
     
 
     return res.status(200).json({
+      success: true,
       message: "Class updated successfully",
       data: updatedClass,
     });
   } catch (error) {
     console.error("Error updating class:", error);
     return res.status(500).json({
+      success: false,
       message: "Server error while updating class",
       error: error.message,
     });
@@ -208,10 +210,11 @@ exports.deleteClasses = async (req, res) => {
    await existingClass.save()
 
 
-    return res.status(200).json({ message: "Class deleted successfully" });
+    return res.status(200).json({ success: true,message: "Class deleted successfully" });
   } catch (error) {
     console.error("Error deleting class:", error);
     return res.status(500).json({
+      success: false,
       message: "Server error while deleting class",
       error: error.message,
     });

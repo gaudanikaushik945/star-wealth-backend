@@ -33,10 +33,10 @@ exports.createBlog = async (req, res) => {
     });
 
     await newBlog.save();
-    return res.status(201).json({ message: "Blog created successfully", blog: newBlog });
+    return res.status(201).json({ success: true,message: "Blog created successfully", blog: newBlog });
   } catch (error) {
     console.error("Error creating blog:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ success: false,message: "Internal server error" });
   }
 };
 
@@ -190,10 +190,10 @@ exports.updateBlog = async (req, res) => {
     const updatedBlog = await findBlog.save();
     console.log("Updated blog:", updatedBlog);
 
-    return res.status(200).json({ message: 'Blog updated successfully', blog: updatedBlog });
+    return res.status(200).json({ success: true,message: 'Blog updated successfully', blog: updatedBlog });
   } catch (error) {
     console.error('Error updating blog:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ success: false,message: 'Internal server error' });
   }
 }
 
@@ -210,9 +210,9 @@ exports.deleteBlog = async (req, res) => {
     await deletedBlog.save();
 
 
-    return res.status(200).json({ message: 'Blog deleted successfully' });
+    return res.status(200).json({ success: true,message: 'Blog deleted successfully' });
   } catch (error) {
     console.error('Error deleting blog:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ success: false,message: 'Internal server error' });
   }
 }   

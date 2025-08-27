@@ -41,9 +41,9 @@ exports.createCourse = async (req, res) => {
     });
 
     const savedCourse = await newCourse.save();
-    res.status(201).json(savedCourse);
+    res.status(201).json({data:savedCourse, success: true, message: "Course created successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false,message: error.message });
   }
 }
 
@@ -191,10 +191,10 @@ exports.updateCourse = async (req, res) => {
     }
 
     await findCourse.save();
-    return res.status(200).json({ message: 'Course updated successfully', course: findCourse });
+    return res.status(200).json({ success: true,message: 'Course updated successfully', course: findCourse });
   } catch (error) {
     console.error('Error updating course:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ success: false,message: 'Internal server error' });
   }
 }
 
@@ -211,9 +211,9 @@ exports.deleteCourse = async (req, res) => {
     deletedCourse.isDeleted = true; // Soft delete
     await deletedCourse.save();
 
-    return res.status(200).json({ message: 'Course deleted successfully', course: deletedCourse });
+    return res.status(200).json({ succes: true,message: 'Course deleted successfully', course: deletedCourse });
   } catch (error) {
     console.error('Error deleting course:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ success: false,message: 'Internal server error' });
   }
 }

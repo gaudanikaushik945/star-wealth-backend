@@ -25,9 +25,9 @@ exports.createAdmin = async (req, res) => {
         const savedAdmin = await newAdmin.save();
         console.log("========= savedAdmin ========", savedAdmin);
 
-        return res.status(201).json({ message: 'Admin created successfully', admin: savedAdmin });
+        return res.status(201).json({ success: true,message: 'Admin created successfully', admin: savedAdmin });
     } catch (error) {
-        return res.status(500).json({ message: error.message });
+        return res.status(500).json({ success: false,message: error.message });
     }
 }
 
@@ -68,7 +68,7 @@ exports.loginAdmin = async (req, res) => {
 });
 
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ success: false,message: error.message });
   }
 };
 
@@ -93,7 +93,7 @@ exports.changePassword = async (req, res) => {
         admin.password = hashedNewPassword;
 
         await admin.save();
-        res.status(200).json({ message: 'Password changed successfully' });
+         res.status(200).json({ message: 'Password changed successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

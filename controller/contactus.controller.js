@@ -25,9 +25,9 @@ exports.createContactUs = async (req, res) => {
         
 
         await newContact.save();
-       return res.status(201).json({ message: 'Contact request created successfully', contact: newContact });
+       return res.status(201).json({ message: 'Contact request created successfully', contact: newContact, success: true });
     } catch (error) {
-       return res.status(500).json({ message: 'Error creating contact request', error: error.message });
+       return res.status(500).json({ message: 'Error creating contact request', error: error.message, success: false });
     }
 }
 

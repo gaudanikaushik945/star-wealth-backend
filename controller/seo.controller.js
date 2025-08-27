@@ -136,10 +136,10 @@ exports.updateSEO = async (req, res) => {
     await findSEO.save();
     console.log("====== findSEO ======", findSEO);
 
-    return res.status(200).json({ message: 'SEO updated successfully', seo: findSEO });
+    return res.status(200).json({ success: true,message: 'SEO updated successfully', seo: findSEO });
   } catch (error) {
     console.error('Error updating SEO:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ success: false,message: 'Internal server error' });
   }
 }
 
@@ -157,9 +157,9 @@ exports.deleteSEO = async (req, res) => {
     deletedSEO.isDeleted = true; // Soft delete
     await deletedSEO.save();
 
-    return res.status(200).json({ message: 'SEO deleted successfully', seo: deletedSEO });
+    return res.status(200).json({ success: true,message: 'SEO deleted successfully', seo: deletedSEO });
   } catch (error) {
     console.error('Error deleting SEO:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ success: false,message: 'Internal server error' });
   }
 }
