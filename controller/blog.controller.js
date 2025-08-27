@@ -185,7 +185,7 @@ exports.updateBlog = async (req, res) => {
       try {
         // Delete old image if exists
         if (findBlog.BlogImage) {
-          const oldFileName = findBlog.BlogImage.replace(`${process.env.BASE_URL}/uploads`, "");
+          const oldFileName = findBlog.BlogImage.replace(`${process.env.BASE_URL}`, "");
           console.log("++++++ oldFileName ==============", oldFileName);
           
           const oldImagePath = path.join(__dirname, "..", "uploads", oldFileName);
@@ -199,7 +199,7 @@ exports.updateBlog = async (req, res) => {
         }
 
         // Save new image URL
-        findBlog.BlogImage = `${process.env.BASE_URL}/uploads/${req.file.filename}`;
+        findBlog.BlogImage = `${process.env.BASE_URL}/uploads/${req.file.filename}`
         console.log("Blog image updated:", findBlog.BlogImage);
       } catch (err) {
         console.error("Error deleting old image:", err);

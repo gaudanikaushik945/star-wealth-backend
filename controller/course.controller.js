@@ -230,7 +230,7 @@ exports.updateCourse = async (req, res) => {
           const oldImagePath = path.join(
             __dirname,
             "..", 
-            findCourse.courseImage.replace(`${process.env.BASE_URL}/`, "")
+            findCourse.courseImage.replace(`${process.env.BASE_URL}/uploads/${req.file.filename}`, "")
           );
 
           if (fs.existsSync(oldImagePath)) {
@@ -243,7 +243,7 @@ exports.updateCourse = async (req, res) => {
       }
 
       // 2. Navi image set karvi
-      const image = `${process.env.BASE_URL}/uploads/${req.file.filename.replace(/\\/g, "/")}`;
+      const image =`${process.env.BASE_URL}/uploads/${req.file.filename}`
       findCourse.courseImage = image;
       console.log("Course image updated:", req.file.path);
     } else {
