@@ -1,17 +1,14 @@
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs");
+const os = require("os");
 
-// Ensure the uploads folder exists
-const uploadDir = path.join(__dirname, "../uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+// Use Vercel's temp directory
+const uploadDir = os.tmpdir();
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDir); // Use absolute path
+    cb(null, uploadDir); // Save in /tmp
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + "-" + file.originalname);
@@ -21,3 +18,4 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 module.exports = upload;
+
