@@ -28,7 +28,7 @@ exports.createBlog = async (req, res) => {
 
       if (req.file) {
       // Convert to full URL
-      image = `${process.env.BASE_URL}/${req.file.path.replace(/\\/g, "/")}`;
+      image = `${process.env.BASE_URL}/uploads/${req.file.filename.replace(/\\/g, "/")}`;
       console.log("Blog image uploaded:", image);
     } else {
       console.log("No blog image uploaded");
