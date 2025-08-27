@@ -52,6 +52,8 @@ exports.getAllCategories = async (req, res) => {
             .skip(skip)
             .limit(pageSize)
             .sort({ createdAt: -1 });
+            console.log("========= categories ======", categories);
+            
 
         if (!categories.length) {
             return res.status(404).json({ success: false, message: "No categories found" });

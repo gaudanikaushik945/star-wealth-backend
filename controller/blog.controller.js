@@ -11,7 +11,7 @@ exports.createBlog = async (req, res) => {
       return res.status(400).json({ message: "Blog with this slug already exists" });
     }
 
-    const findCategory = await Category.findOne({categoryName: category})
+    const findCategory = await Category.findOne({_id: category})
     if (!findCategory) {
       return res.status(404).json({success: false, message: "Category not found"})
       
