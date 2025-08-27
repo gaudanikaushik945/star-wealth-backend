@@ -20,10 +20,18 @@ exports.createBlog = async (req, res) => {
     }
 
     // Handle blog image
-    let image = null;
-    if (req.file) {
-      image = `${process.env.BASE_URL}/uploads/${req.file.filename}`;
+    // let image = null;
+    // if (req.file) {
+    //   image = `${process.env.BASE_URL}/uploads/${req.file.filename}`;
+    //   console.log("Blog image uploaded: -----------------------------", image);
+    // }
+
+      if (req.file) {
+      // Convert to full URL
+      image = `${process.env.BASE_URL}/${req.file.path.replace(/\\/g, "/")}`;
       console.log("Blog image uploaded:", image);
+    } else {
+      console.log("No blog image uploaded");
     }
 
     // Create new blog
