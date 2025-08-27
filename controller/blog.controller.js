@@ -90,17 +90,11 @@ exports.createBlog = async (req, res) => {
 
     let image = null;
     if (req.file) {
-      // Read file from /tmp
       const fileData = fs.readFileSync(req.file.path);
-
-      // Convert to Base64 string
       image = `data:${req.file.mimetype};base64,${fileData.toString("base64")}`;
-
-      // Delete temp file (optional but recommended)
-      fs.unlinkSync(req.file.path);
-
-      console.log("Blog image saved in DB as base64");
+      fs.unlinkSync(req.file.path); // cleanup temp
     }
+
 
     // Create new blog
     const newBlog = new Blog({
