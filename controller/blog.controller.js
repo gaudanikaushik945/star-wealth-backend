@@ -1,5 +1,7 @@
 const Blog = require('../model/blog.model');
 const Category = require('../model/category.model');
+const path = require("path")
+const fs = require("fs")
 
 exports.createBlog = async (req, res) => {
   try {
@@ -174,13 +176,41 @@ exports.updateBlog = async (req, res) => {
       return res.status(404).json({ message: 'Blog not found' });
     }
 
-    const image = `${process.env.BASE_URL}/${req.file.path.replace(/\\/g, "/")}`;
+    // const image =  `${process.env.BASE_URL}/${req.file.path.replace(/\\/g, "/")}`;
 
-    if (image) {
-      console.log("Blog image updated:", image);
-    } else {
-      console.log("No blog image updated");
-    }
+    // if (image) {
+    //   console.log("Blog image updated:", image);
+    // } else {
+    //   console.log("No blog image updated");
+    // }
+    let image = null
+
+    if (req.file) {
+        
+          if (findBlog.BlogImage) {
+            try {
+              const oldImagePath = path.join(
+                __dirname,
+                "..", 
+                findBlog.BlogImage.replace(`${process.env.BASE_URL}/`, "")
+              );
+    
+              if (fs.existsSync(oldImagePath)) {
+                fs.unlinkSync(oldImagePath);
+                console.log("Old course image deleted:", oldImagePath);
+              }
+            } catch (err) {
+              console.error("Error deleting old image:", err);
+            }
+          }
+    
+          // 2. Navi image set karvi
+           image = `${process.env.BASE_URL}/${req.file.path.replace(/\\/g, "/")}`;
+          findBlog.BlogImage = image;
+          console.log("Course image updated:", req.file.path);
+        } else {
+          console.log("No course image updated");
+        }
 
     console.log("===== request body for blog update:", req.body);
 

@@ -1,6 +1,8 @@
 const { default: mongoose } = require('mongoose');
 const Course = require('../model/course.model');
 require("dotenv").config()
+const path = require("path")
+const fs = require("fs")
 
 exports.createCourse = async (req, res) => {
   try {
@@ -161,42 +163,104 @@ exports.getAllCourses = async (req, res) => {
 };
 
 
+// exports.updateCourse = async (req, res) => {
+//   try {
+//     const { courseId } = req.query;
+//     console.log("Updating course with ID:", courseId);
+//     console.log(
+//       "========= req.body ======", req.body
+//     );
+
+//     const { courseName, courseDescription, coursePrice, courseFeatured, paymnetLink } = req.body;
+
+
+//     const findCourse = await Course.findOne({ _id: new mongoose.Types.ObjectId(courseId), isDeleted: false });
+//     if (!findCourse) {
+//       return res.status(404).json({ message: 'Course not found' });
+//     }
+//     if (courseName) findCourse.courseName = courseName;
+//     if (courseDescription) findCourse.courseDescription = courseDescription;
+//     if (coursePrice) findCourse.coursePrice = coursePrice;
+//     if (courseFeatured) findCourse.courseFeatured = courseFeatured;
+//     if (paymnetLink) findCourse.paymnetLink = paymnetLink;
+//     if (req.file) {
+//       image = `${process.env.BASE_URL}/${req.file.path.replace(/\\/g, "/")}`;
+
+//       findCourse.courseImage = image; // Assuming you are using multer for file uploads
+//       console.log("Course image updated:", req.file.path);
+//     } else {
+//       console.log("No course image updated");
+//     }
+
+//     await findCourse.save();
+//     return res.status(200).json({ success: true,message: 'Course updated successfully', course: findCourse });
+//   } catch (error) {
+//     console.error('Error updating course:', error);
+//     return res.status(500).json({ success: false,message: 'Internal server error' });
+//   }
+// }
+
+
+
 exports.updateCourse = async (req, res) => {
   try {
     const { courseId } = req.query;
     console.log("Updating course with ID:", courseId);
-    console.log(
-      "========= req.body ======", req.body
-    );
+    console.log("========= req.body ======", req.body);
 
     const { courseName, courseDescription, coursePrice, courseFeatured, paymnetLink } = req.body;
 
-
-    const findCourse = await Course.findOne({ _id: new mongoose.Types.ObjectId(courseId), isDeleted: false });
+    const findCourse = await Course.findOne({
+      _id: new mongoose.Types.ObjectId(courseId),
+      isDeleted: false,
+    });
     if (!findCourse) {
-      return res.status(404).json({ message: 'Course not found' });
+      return res.status(404).json({ message: "Course not found" });
     }
+
     if (courseName) findCourse.courseName = courseName;
     if (courseDescription) findCourse.courseDescription = courseDescription;
     if (coursePrice) findCourse.coursePrice = coursePrice;
     if (courseFeatured) findCourse.courseFeatured = courseFeatured;
     if (paymnetLink) findCourse.paymnetLink = paymnetLink;
-    if (req.file) {
-      image = `${process.env.BASE_URL}/${req.file.path.replace(/\\/g, "/")}`;
 
-      findCourse.courseImage = image; // Assuming you are using multer for file uploads
+    if (req.file) {
+    
+      if (findCourse.courseImage) {
+        try {
+          const oldImagePath = path.join(
+            __dirname,
+            "..", 
+            findCourse.courseImage.replace(`${process.env.BASE_URL}/`, "")
+          );
+
+          if (fs.existsSync(oldImagePath)) {
+            fs.unlinkSync(oldImagePath);
+            console.log("Old course image deleted:", oldImagePath);
+          }
+        } catch (err) {
+          console.error("Error deleting old image:", err);
+        }
+      }
+
+      // 2. Navi image set karvi
+      const image = `${process.env.BASE_URL}/${req.file.path.replace(/\\/g, "/")}`;
+      findCourse.courseImage = image;
       console.log("Course image updated:", req.file.path);
     } else {
       console.log("No course image updated");
     }
 
     await findCourse.save();
-    return res.status(200).json({ success: true,message: 'Course updated successfully', course: findCourse });
+    return res
+      .status(200)
+      .json({ success: true, message: "Course updated successfully", course: findCourse });
   } catch (error) {
-    console.error('Error updating course:', error);
-    return res.status(500).json({ success: false,message: 'Internal server error' });
+    console.error("Error updating course:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
-}
+};
+
 
 exports.deleteCourse = async (req, res) => {
   try {
