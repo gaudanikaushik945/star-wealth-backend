@@ -1,21 +1,15 @@
 const multer = require("multer");
-const path = require("path");
 const os = require("os");
+const path = require("path");
 
-// Use Vercel's temp directory
-const uploadDir = os.tmpdir();
-
-// Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDir); // Save in /tmp
+    cb(null, os.tmpdir()); // Vercel temp dir
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+    cb(null, Date.now() + path.extname(file.originalname));
   },
 });
 
 const upload = multer({ storage });
-
 module.exports = upload;
-
