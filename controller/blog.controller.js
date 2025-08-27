@@ -11,6 +11,12 @@ exports.createBlog = async (req, res) => {
       return res.status(400).json({ message: "Blog with this slug already exists" });
     }
 
+    const findCategory = await Category.findOne({categoryName: category})
+    if (!findCategory) {
+      return res.status(404).json({success: false, message: "Category not found"})
+      
+    }
+
     let image = null;
     console.log("+++++++++++++ process.env.BASE_URL +++++++++++++++", process.env.BASE_URL);
 
@@ -26,7 +32,7 @@ exports.createBlog = async (req, res) => {
       title,
       content,
       authName,
-      category,
+      category: findCategory._id,
       shortDescription,
       BlogImage: image,
       slug,
