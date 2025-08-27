@@ -1,35 +1,32 @@
 const Blog = require('../model/blog.model');
 const Category = require('../model/category.model');
 const path = require("path")
-const fs = require("fs")
-
+const fs = require("fs");
 exports.createBlog = async (req, res) => {
   try {
     console.log("Creating blog with data:", req.body);
-    const { title, content, authName, category, shortDescription, slug } = req.body;
+    let { title, content, authName, category, shortDescription, slug } = req.body;
 
+    // Check for duplicate slug
     const existingBlog = await Blog.findOne({ slug });
     if (existingBlog) {
-      return res.status(400).json({ message: "Blog with this slug already exists" });
+      return res.status(400).json({ success: false, message: "Blog with this slug already exists" });
     }
 
-    const findCategory = await Category.findOne({_id: category})
+    // Check if category exists
+    const findCategory = await Category.findById(category);
     if (!findCategory) {
-      return res.status(404).json({success: false, message: "Category not found"})
-      
+      return res.status(404).json({ success: false, message: "Category not found" });
     }
 
+    // Handle blog image
     let image = null;
-    console.log("+++++++++++++ process.env.BASE_URL create +++++++++++++++", process.env.BASE_URL);
-
     if (req.file) {
-      // Convert to full URL
-      image = `${process.env.BASE_URL}${req.file.path.replace(/\\/g, "/")}`;
+      image = `${process.env.BASE_URL}/uploads/${req.file.filename}`;
       console.log("Blog image uploaded:", image);
-    } else {
-      console.log("No blog image uploaded");
     }
 
+    // Create new blog
     const newBlog = new Blog({
       title,
       content,
@@ -41,10 +38,20 @@ exports.createBlog = async (req, res) => {
     });
 
     await newBlog.save();
-    return res.status(201).json({ success: true,message: "Blog created successfully", blog: newBlog });
+    await newBlog.populate("category", "name");
+
+    return res.status(201).json({
+      success: true,
+      message: "Blog created successfully",
+      blog: newBlog,
+    });
   } catch (error) {
     console.error("Error creating blog:", error);
-    return res.status(500).json({ success: false,message: "Internal server error" });
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
   }
 };
 
@@ -91,7 +98,6 @@ exports.createBlog = async (req, res) => {
 
 exports.getAllBlogs = async (req, res) => {
   try {
-    console.log("========= req.query Blog =========", req.query);
     
     const { title, categoryId, slug, blogId, categorySlug, page = 1, limit = 10 } = req.query;
 
@@ -126,14 +132,12 @@ exports.getAllBlogs = async (req, res) => {
     const pageSize = parseInt(limit, 10) || 10;
     const skip = (pageNumber - 1) * pageSize;
 
-    console.log("========== filter Blog =============", filter);
     
     const blogs = await Blog.find(filter)
       .populate("category", "categoryName")
       .skip(skip)
       .limit(pageSize)
       .sort({ createdAt: -1 });
-      console.log("======== blogs ========",blogs.length);
       
 
     const totalBlogs = await Blog.countDocuments(filter);
@@ -173,65 +177,72 @@ exports.updateBlog = async (req, res) => {
 
     const findBlog = await Blog.findOne({ _id: blogId, isDeleted: false });
     if (!findBlog) {
-      return res.status(404).json({ message: 'Blog not found' });
+      return res.status(404).json({ success: false, message: "Blog not found" });
     }
 
-    // const image =  `${process.env.BASE_URL}/${req.file.path.replace(/\\/g, "/")}`;
-
-    // if (image) {
-    //   console.log("Blog image updated:", image);
-    // } else {
-    //   console.log("No blog image updated");
-    // }
-    let image = null
-
+    // 🔹 Handle new image upload
     if (req.file) {
-        
-          if (findBlog.BlogImage) {
-            try {
-              const oldImagePath = path.join(
-                __dirname,
-                "..", 
-                findBlog.BlogImage.replace(`${process.env.BASE_URL}/`, "")
-              );
-    
-              if (fs.existsSync(oldImagePath)) {
-                fs.unlinkSync(oldImagePath);
-                console.log("Old course image deleted:", oldImagePath);
-              }
-            } catch (err) {
-              console.error("Error deleting old image:", err);
-            }
+      try {
+        // Delete old image if exists
+        if (findBlog.BlogImage) {
+          const oldFileName = findBlog.BlogImage.replace(`${process.env.BASE_URL}/uploads`, "");
+          console.log("++++++ oldFileName ==============", oldFileName);
+          
+          const oldImagePath = path.join(__dirname, "..", "uploads", oldFileName);
+          console.log("======== oldImagePath ========", oldImagePath);
+          
+
+          if (fs.existsSync(oldImagePath)) {
+            fs.unlinkSync(oldImagePath);
+            console.log("Old blog image deleted:", oldImagePath);
           }
-    
-          // 2. Navi image set karvi
-           image = `${process.env.BASE_URL}/${req.file.path.replace(/\\/g, "/")}`;
-          findBlog.BlogImage = image;
-          console.log("Course image updated:", req.file.path);
-        } else {
-          console.log("No course image updated");
         }
 
-    console.log("===== request body for blog update:", req.body);
+        // Save new image URL
+        findBlog.BlogImage = `${process.env.BASE_URL}/uploads/${req.file.filename}`;
+        console.log("Blog image updated:", findBlog.BlogImage);
+      } catch (err) {
+        console.error("Error deleting old image:", err);
+      }
+    }
 
-
+    // 🔹 Update other fields
     if (title) findBlog.title = title;
     if (content) findBlog.content = content;
     if (authName) findBlog.authName = authName;
-    if (category) findBlog.category = category;
+    if (category) {
+      const checkCategory = await Category.findById(category);
+      if (!checkCategory) {
+        return res.status(404).json({ success: false, message: "Category not found" });
+      }
+      findBlog.category = category;
+    }
     if (shortDescription) findBlog.shortDescription = shortDescription;
-    if (slug) findBlog.slug = slug;
-    if (image) findBlog.BlogImage = image;
+    if (slug) {
+      const existingSlug = await Blog.findOne({ slug, _id: { $ne: blogId } });
+      if (existingSlug) {
+        return res.status(400).json({ success: false, message: "Slug already exists" });
+      }
+      findBlog.slug = slug.toLowerCase().trim().replace(/\s+/g, "-");
+    }
 
     const updatedBlog = await findBlog.save();
     console.log("Updated blog:", updatedBlog);
 
-    return res.status(200).json({ success: true,message: 'Blog updated successfully', blog: updatedBlog });
+    return res.status(200).json({
+      success: true,
+      message: "Blog updated successfully",
+      blog: updatedBlog,
+    });
   } catch (error) {
-    console.error('Error updating blog:', error);
-    return res.status(500).json({ success: false,message: 'Internal server error' });
+    console.error("Error updating blog:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
   }
-}
+};
 
 exports.deleteBlog = async (req, res) => {
   try {

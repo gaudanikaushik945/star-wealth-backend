@@ -19,15 +19,10 @@ exports.createCourse = async (req, res) => {
     // const courseFeatured = JSON.parse(req.body.courseFeatured);
 
 
-    let image = null;
-    console.log("+++++++++++++ process.env.BASE_URL +++++++++++++++", process.env.BASE_URL);
-
+     let image = null;
     if (req.file) {
-      // Convert to full URL
-      image = `${process.env.BASE_URL}/${req.file.path.replace(/\\/g, "/")}`;
+      image = `${process.env.BASE_URL}/uploads/${req.file.filename}`;
       console.log("Blog image uploaded:", image);
-    } else {
-      console.log("No blog image uploaded");
     }
 
 
@@ -248,7 +243,7 @@ exports.updateCourse = async (req, res) => {
       }
 
       // 2. Navi image set karvi
-      const image = `${process.env.BASE_URL}/${req.file.path.replace(/\\/g, "/")}`;
+      const image = `${process.env.BASE_URL}/uploads/${req.file.filename.replace(/\\/g, "/")}`;
       findCourse.courseImage = image;
       console.log("Course image updated:", req.file.path);
     } else {
