@@ -143,7 +143,11 @@ exports.getAllCourses = async (req, res) => {
       .skip(skip)
       .limit(limitNumber);
 
+      console.log("========== courses.length =========", courses.length);
+      
     return res.status(200).json({
+      
+      
       success: true,
       message: "Courses fetched successfully",
       data: {
@@ -274,8 +278,10 @@ exports.deleteCourse = async (req, res) => {
     }
     deletedCourse.isDeleted = true; // Soft delete
     await deletedCourse.save();
+    console.log("========= deletedCourse =======", deletedCourse);
+    
 
-    return res.status(200).json({ succes: true,message: 'Course deleted successfully', course: deletedCourse });
+    return res.status(200).json({ success: true,message: 'Course deleted successfully', data: deletedCourse });
   } catch (error) {
     console.error('Error deleting course:', error);
     return res.status(500).json({ success: false,message: 'Internal server error' });

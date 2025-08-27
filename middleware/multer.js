@@ -1,16 +1,23 @@
-const multer = require('multer');
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+
+// Ensure the uploads folder exists
+const uploadDir = path.join(__dirname, "../uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, '../uploads'); // Specify the directory to save uploaded files
+    cb(null, uploadDir); // Use absolute path
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname); // Append timestamp to the original file name
-  }
+    cb(null, Date.now() + "-" + file.originalname);
+  },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
-// Export the configured multer instance
 module.exports = upload;
