@@ -51,7 +51,7 @@ exports.getAllContacts = async (req, res) => {
     }
 
     // Fetch contacts with applied filter
-    const contacts = await ContactUs.find(filter);
+    const contacts = await ContactUs.find(filter).sort({createdAt: -1});
 
     if (contacts.length === 0) {
       return res.status(404).json({ success: false, message: "No contacts found" });
