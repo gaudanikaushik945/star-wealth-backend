@@ -2,6 +2,7 @@ const Blog = require('../model/blog.model');
 const Category = require('../model/category.model');
 const path = require("path")
 const fs = require("fs");
+const mongoose = require("mongoose")
 exports.createBlog = async (req, res) => {
   try {
     console.log("Creating blog with data:", req.body);
@@ -106,6 +107,8 @@ exports.createBlog = async (req, res) => {
 
 exports.getAllBlogs = async (req, res) => {
   try {
+    console.log("====== req.query ======", req.query);
+    
 
     const { title, categoryId, slug, blogId, categorySlug, page = 1, limit = 10 } = req.query;
 
@@ -139,6 +142,7 @@ exports.getAllBlogs = async (req, res) => {
     const pageNumber = parseInt(page, 10) || 1;
     const pageSize = parseInt(limit, 10) || 10;
     const skip = (pageNumber - 1) * pageSize;
+console.log("======== filter ======", filter);
 
 
     const blogs = await Blog.find(filter)
@@ -146,6 +150,8 @@ exports.getAllBlogs = async (req, res) => {
       .skip(skip)
       .limit(pageSize)
       .sort({ createdAt: -1 });
+      console.log("====== blogs ======", blogs.length);
+      
 
 
     const totalBlogs = await Blog.countDocuments(filter);

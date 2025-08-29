@@ -207,7 +207,7 @@ exports.updateCourse = async (req, res) => {
     console.log("Updating course with ID:", courseId);
     console.log("========= req.body ======", req.body);
 
-    const { courseName, courseDescription, coursePrice, courseFeatured, paymnetLink } = req.body;
+    const { courseName, courseDescription, coursePrice, courseFeatured, paymnetLink, slug } = req.body;
 
     const findCourse = await Course.findOne({
       _id: new mongoose.Types.ObjectId(courseId),
@@ -222,6 +222,7 @@ exports.updateCourse = async (req, res) => {
     if (coursePrice) findCourse.coursePrice = coursePrice;
     if (courseFeatured) findCourse.courseFeatured = courseFeatured;
     if (paymnetLink) findCourse.paymnetLink = paymnetLink;
+    if(slug) findCourse.slug = slug
 
     if (req.file) {
     

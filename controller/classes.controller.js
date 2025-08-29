@@ -137,7 +137,8 @@ exports.getClasses = async (req, res) => {
         limit: limitNum,
         totalPages: Math.ceil(total / limitNum),
       },
-    }
+    },
+    message: "Clasee get successfully"
     });
   } catch (error) {
     console.error("Error fetching classes:", error);
